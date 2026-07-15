@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "fable-architect": {
+      "source": "ahmdd4vd/Fable5res",
+      "sourceType": "github",
+      "skillPath": "skills/fable-architect/SKILL.md",
+      "computedHash": "4b6bde6b0434ac078498db4667f5068ad847904a8441aa268de436058a6c8e0c"
+    },
+    "fable-code": {
+      "source": "ahmdd4vd/Fable5res",
+      "sourceType": "github",
+      "skillPath": "skills/fable-code/SKILL.md",
+      "computedHash": "75f7974e8591bc24772f9e6660b4bf3fa00cb545aed681d1d32d6b799639ab5d"
+    },
+    "fable-debug": {
+      "source": "ahmdd4vd/Fable5res",
+      "sourceType": "github",
+      "skillPath": "skills/fable-debug/SKILL.md",
+      "computedHash": "7d4d96f96f204f6552c7220b9b2e438e1bd787e8aa76d718c4990b45ab9d1634"
+    },
+    "fable-think": {
+      "source": "ahmdd4vd/Fable5res",
+      "sourceType": "github",
+      "skillPath": "skills/fable-think/SKILL.md",
+      "computedHash": "4a7897b9e1bd1c2598fe1b7c8f3d78fc6a2df8af1ac51ec5bb0a29d351f78162"
+    },
+    "fable-verify": {
+      "source": "ahmdd4vd/Fable5res",
+      "sourceType": "github",
+      "skillPath": "skills/fable-verify/SKILL.md",
+      "computedHash": "429b937abf5c99d8494f1c7bb05f9090743550e580503dca4479723f3fe0a244"
+    }
+  }
+}

@@ -1,0 +1,81 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky.png" id="2_sky"]
+[ext_resource type="Texture2D" path="res://assets/sprites/mountains.png" id="3_mountains"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest.png" id="4_forest"]
+[ext_resource type="Texture2D" path="res://assets/sprites/foreground.png" id="5_foreground"]
+[ext_resource type="Script" path="res://scripts/road/road_manager.gd" id="6_roadmgr"]
+[ext_resource type="Script" path="res://scripts/components/node_pool.gd" id="7_pool"]
+[ext_resource type="PackedScene" path="res://scenes/road_chunk.tscn" id="8_chunk"]
+[ext_resource type="PackedScene" path="res://scenes/player_car.tscn" id="9_player"]
+[ext_resource type="Script" path="res://scripts/camera/follow_camera.gd" id="10_camera"]
+[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="11_hud"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+player = NodePath("PlayerCar")
+hud = NodePath("HUD")
+
+[node name="BackgroundParallax" type="ParallaxBackground" parent="."]
+
+[node name="SkyLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0, 0)
+
+[node name="Sky" type="Sprite2D" parent="BackgroundParallax/SkyLayer"]
+scale = Vector2(2, 2)
+texture = ExtResource("2_sky")
+centered = false
+
+[node name="MountainLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0.15, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="Mountains" type="Sprite2D" parent="BackgroundParallax/MountainLayer"]
+position = Vector2(0, 40)
+scale = Vector2(2, 2)
+texture = ExtResource("3_mountains")
+centered = false
+
+[node name="ForestLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0.4, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="Forest" type="Sprite2D" parent="BackgroundParallax/ForestLayer"]
+position = Vector2(0, 150)
+scale = Vector2(2, 2)
+texture = ExtResource("4_forest")
+centered = false
+
+[node name="ForegroundParallax" type="ParallaxBackground" parent="."]
+layer = 1
+
+[node name="ForegroundLayer" type="ParallaxLayer" parent="ForegroundParallax"]
+motion_scale = Vector2(1.15, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="Foreground" type="Sprite2D" parent="ForegroundParallax/ForegroundLayer"]
+position = Vector2(0, 300)
+scale = Vector2(2, 2)
+texture = ExtResource("5_foreground")
+centered = false
+
+[node name="RoadManager" type="Node2D" parent="."]
+position = Vector2(0, 260)
+script = ExtResource("6_roadmgr")
+pool = NodePath("ChunkPool")
+view_anchor = NodePath("../FollowCamera")
+
+[node name="ChunkPool" type="Node" parent="RoadManager"]
+script = ExtResource("7_pool")
+scene = ExtResource("8_chunk")
+
+[node name="PlayerCar" parent="." instance=ExtResource("9_player")]
+position = Vector2(0, 260)
+
+[node name="FollowCamera" type="Camera2D" parent="."]
+position = Vector2(0, 180)
+script = ExtResource("10_camera")
+target = NodePath("../PlayerCar")
+
+[node name="HUD" parent="." instance=ExtResource("11_hud")]
