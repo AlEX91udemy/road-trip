@@ -22,6 +22,9 @@ signal speed_changed(speed_kmh: float)
 signal distance_changed(distance_m: float)
 ## The car hit something lethal (oncoming traffic). Emitted exactly once.
 signal crashed
+## The engine died (no fuel) and the car has rolled to a complete stop.
+## Emitted exactly once.
+signal stalled
 
 ## The drivetrain component driving this car.
 @export var movement: MovementComponent
@@ -37,6 +40,9 @@ signal crashed
 ## World scale: how many pixels equal one meter. Owns the unit conversion so
 ## km/h and meters are computed in exactly one place.
 @export var pixels_per_meter := 10.0
+## Fuel level (percent) below which the engine starts losing power: top speed
+## fades linearly from here down to a dead stop at 0%.
+@export var low_fuel_threshold := 15.0
 
 const ACTION_LANE_UP := "lane_up"
 const ACTION_LANE_DOWN := "lane_down"
@@ -50,6 +56,7 @@ var _distance_m := 0.0
 var _last_speed_kmh := -1.0
 var _last_distance_m := -1.0
 var _crashed := false
+var _stalled := false
 
 func _ready() -> void:
 	if hitbox != null:
@@ -79,6 +86,17 @@ func _physics_process(delta: float) -> void:
 	_distance_m += speed_px * delta / pixels_per_meter
 	_spin_wheels(speed_px, delta)
 	_emit_telemetry(speed_px)
+
+	if movement.power_scale <= 0.0 and speed_px <= 0.0 and not _stalled:
+		_stalled = true
+		stalled.emit()
+
+
+## Fed the fuel level (percent) by Main; translates it into engine power so
+## a draining tank gradually starves the drivetrain instead of cutting out.
+func set_fuel(percent: float) -> void:
+	if movement != null:
+		movement.power_scale = percent / low_fuel_threshold
 
 
 func _spin_wheels(speed_px: float, delta: float) -> void:

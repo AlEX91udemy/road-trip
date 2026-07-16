@@ -27,6 +27,14 @@ signal speed_changed(speed: float)
 ## Current forward speed in px/s. Read-only for owners; write via step().
 var speed := 0.0
 
+## Engine health/starvation factor, 0..1. Scales both acceleration and the
+## reachable top speed, so a fading engine slows down gradually instead of
+## cutting out: 1 = full power (default), 0 = dead engine, the car only
+## coasts. Owners drive this (e.g. from the fuel level); traffic leaves it at 1.
+var power_scale := 1.0:
+	set(value):
+		power_scale = clampf(value, 0.0, 1.0)
+
 var _throttle := 0.0
 var _last_emitted_speed := -1.0
 
@@ -38,17 +46,21 @@ func set_throttle(value: float) -> void:
 ## Advance the simulation by delta seconds. Called by the owner every physics
 ## frame; returns the new speed for convenience.
 func step(delta: float) -> float:
+	var effective_max := max_speed * power_scale
 	var accel := 0.0
-	if _throttle > 0.0:
+	if _throttle > 0.0 and speed < effective_max:
 		# Smooth ramp: full torque from standstill, fading to zero at max speed.
-		accel = _throttle * acceleration * (1.0 - pow(speed / max_speed, accel_falloff))
+		accel = _throttle * acceleration * power_scale \
+				* (1.0 - pow(speed / effective_max, accel_falloff))
 	elif _throttle < 0.0:
 		accel = _throttle * brake_strength
 	elif speed > 0.0:
 		accel = -coast_drag
+	if speed > effective_max:
+		accel = -coast_drag  # the engine can no longer hold this speed
 
 	speed = clampf(speed + accel * delta, 0.0, max_speed)
-	if speed < 1.0 and _throttle <= 0.0:
+	if speed < 1.0 and (_throttle <= 0.0 or effective_max <= 0.0):
 		speed = 0.0  # snap to rest instead of crawling forever
 
 	if not is_equal_approx(speed, _last_emitted_speed):

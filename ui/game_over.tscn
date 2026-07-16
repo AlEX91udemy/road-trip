@@ -2,10 +2,11 @@
 
 [ext_resource type="Script" path="res://ui/game_over.gd" id="1_gameover"]
 
-[node name="GameOver" type="CanvasLayer" node_paths=PackedStringArray("distance_label")]
+[node name="GameOver" type="CanvasLayer" node_paths=PackedStringArray("title_label", "distance_label")]
 process_mode = 3
 layer = 20
 script = ExtResource("1_gameover")
+title_label = NodePath("Root/CenterBox/TitleLabel")
 distance_label = NodePath("Root/CenterBox/DistanceLabel")
 
 [node name="Root" type="Control" parent="."]

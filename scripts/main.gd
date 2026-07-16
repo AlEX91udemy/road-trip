@@ -3,8 +3,9 @@ extends Node2D
 ## and always through signals:
 ##
 ##   PlayerCar.speed_changed / distance_changed  ──►  HUD
-##   PlayerCar.crashed                           ──►  GameManager.end_run
-##   GameManager.fuel_changed                    ──►  HUD
+##   PlayerCar.distance_changed                  ──►  GameManager (fuel burn)
+##   PlayerCar.crashed / stalled                 ──►  GameManager.end_run
+##   GameManager.fuel_changed                    ──►  HUD + PlayerCar power
 ##   GameManager.run_ended                       ──►  GameOverScreen.open
 ##   GameOverScreen.restart_requested            ──►  GameManager.restart_run
 ##
@@ -27,8 +28,13 @@ func _ready() -> void:
 	player.distance_changed.connect(hud.display_distance)
 	GameManager.fuel_changed.connect(hud.display_fuel)
 
-	# Crash -> run end -> game over screen -> restart, still signals only.
+	# Fuel loop: driving burns fuel, the fuel level feeds engine power back.
+	player.distance_changed.connect(GameManager.report_distance)
+	GameManager.fuel_changed.connect(player.set_fuel)
+
+	# Run end (crash or dry tank) -> game over screen -> restart, signals only.
 	player.crashed.connect(_on_player_crashed)
+	player.stalled.connect(_on_player_stalled)
 	GameManager.run_ended.connect(game_over.open)
 	game_over.restart_requested.connect(GameManager.restart_run)
 
@@ -41,5 +47,9 @@ func _ready() -> void:
 
 
 func _on_player_crashed() -> void:
-	# The player only announces the crash; consequences are decided here.
-	GameManager.end_run(player.distance_m)
+	# The player only announces what happened; consequences are decided here.
+	GameManager.end_run(player.distance_m, GameManager.RunEndReason.CRASHED)
+
+
+func _on_player_stalled() -> void:
+	GameManager.end_run(player.distance_m, GameManager.RunEndReason.OUT_OF_FUEL)
