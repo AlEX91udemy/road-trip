@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/road/road_chunk.gd" id="1_chunk"]
 [ext_resource type="Texture2D" path="res://assets/sprites/road.png" id="2_road"]
 
-[node name="RoadChunk" type="Node2D"]
+[node name="RoadChunk" type="Node2D" node_paths=PackedStringArray("roadside_slots")]
 script = ExtResource("1_chunk")
 width = 512.0
 roadside_slots = NodePath("RoadsideSlots")

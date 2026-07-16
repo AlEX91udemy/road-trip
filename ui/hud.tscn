@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("speed_label", "distance_label", "fuel_label")]
 layer = 10
 script = ExtResource("1_hud")
 speed_label = NodePath("Root/Stats/SpeedLabel")

@@ -12,7 +12,7 @@
 [ext_resource type="Script" path="res://scripts/camera/follow_camera.gd" id="10_camera"]
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="11_hud"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("player", "hud")]
 script = ExtResource("1_main")
 player = NodePath("PlayerCar")
 hud = NodePath("HUD")
@@ -60,7 +60,7 @@ scale = Vector2(2, 2)
 texture = ExtResource("5_foreground")
 centered = false
 
-[node name="RoadManager" type="Node2D" parent="."]
+[node name="RoadManager" type="Node2D" parent="." node_paths=PackedStringArray("pool", "view_anchor")]
 position = Vector2(0, 260)
 script = ExtResource("6_roadmgr")
 pool = NodePath("ChunkPool")
@@ -73,7 +73,7 @@ scene = ExtResource("8_chunk")
 [node name="PlayerCar" parent="." instance=ExtResource("9_player")]
 position = Vector2(0, 260)
 
-[node name="FollowCamera" type="Camera2D" parent="."]
+[node name="FollowCamera" type="Camera2D" parent="." node_paths=PackedStringArray("target")]
 position = Vector2(0, 180)
 script = ExtResource("10_camera")
 target = NodePath("../PlayerCar")

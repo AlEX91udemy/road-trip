@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/car_body.png" id="4_body"]
 [ext_resource type="Texture2D" path="res://assets/sprites/car_wheel.png" id="5_wheel"]
 
-[node name="PlayerCar" type="Node2D"]
+[node name="PlayerCar" type="Node2D" node_paths=PackedStringArray("movement", "front_wheel", "back_wheel")]
 script = ExtResource("1_player")
 movement = NodePath("MovementComponent")
 front_wheel = NodePath("WheelFront")
@@ -27,7 +27,7 @@ texture = ExtResource("4_body")
 [node name="MovementComponent" type="Node" parent="."]
 script = ExtResource("2_movement")
 
-[node name="SwayComponent" type="Node" parent="."]
+[node name="SwayComponent" type="Node" parent="." node_paths=PackedStringArray("target")]
 script = ExtResource("3_sway")
 target = NodePath("../Body")
 
