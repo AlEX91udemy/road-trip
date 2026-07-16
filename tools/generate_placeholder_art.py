@@ -207,8 +207,11 @@ def gen_road():
                 c = (v, v + 2, v + 12)
                 if hnoise(x // 7, y // 3, 42) > 0.97:
                     c = (60, 62, 72)             # cracks
-            # dashed marking (period 32 divides 256 -> tiles cleanly)
-            if 9 <= y <= 11 and (x % 32) < 18:
+            # dashed lane separators: 3 driving lanes between the shoulder
+            # (rows 0-2) and the shadowed base (rows 44+). Boundaries sit at
+            # source rows 16-17 and 29-30 -> world y 292-296 / 318-322 when the
+            # chunk is drawn 2x from y=260. Period 32 divides 256 -> tiles cleanly.
+            if (16 <= y <= 17 or 29 <= y <= 30) and (x % 32) < 18:
                 c = (208, 202, 186)
             buf[(x, y)] = (*c, 255)
     save_png(OUT_DIR / "road.png", w, h, buf)
@@ -216,12 +219,12 @@ def gen_road():
 
 # ---------------------------------------------------------------- car body + wheel
 
-def gen_car():
+def draw_car_body(body, body_dark, body_light):
+    """Draws the shared 56x24 side-view car hull in the given paint colors.
+    Used for the player body and every traffic color variant, so all cars
+    stay pixel-identical in silhouette."""
     w, h = 56, 24
     buf = {}
-    body = (198, 58, 66)
-    body_dark = (152, 40, 54)
-    body_light = (226, 96, 96)
     window = (150, 205, 230)
     window_dark = (112, 170, 205)
 
@@ -250,7 +253,24 @@ def gen_car():
                 if (x - cx) ** 2 + (y - 21) ** 2 <= 7 ** 2:
                     buf.pop((x, y), None)
     outline(buf, w, h, (40, 24, 32, 255))
+    return w, h, buf
+
+
+# Traffic paint jobs: (name, body, body_dark, body_light). Distinct hues so
+# oncoming cars read instantly as "not the player" (player stays red).
+TRAFFIC_PAINTS = [
+    ("blue", (64, 108, 190), (44, 78, 148), (108, 148, 224)),
+    ("green", (74, 148, 92), (52, 110, 66), (112, 182, 124)),
+    ("sand", (206, 176, 96), (166, 136, 64), (228, 204, 136)),
+]
+
+
+def gen_car():
+    w, h, buf = draw_car_body((198, 58, 66), (152, 40, 54), (226, 96, 96))
     save_png(OUT_DIR / "car_body.png", w, h, buf)
+    for name, body, dark, light in TRAFFIC_PAINTS:
+        w, h, buf = draw_car_body(body, dark, light)
+        save_png(OUT_DIR / f"traffic_body_{name}.png", w, h, buf)
 
     # wheel: 12x12, small tread marks make the spin animation visible
     s = 12

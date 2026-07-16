@@ -3,18 +3,23 @@ extends Node2D
 ## and always through signals:
 ##
 ##   PlayerCar.speed_changed / distance_changed  ──►  HUD
+##   PlayerCar.crashed                           ──►  GameManager.end_run
 ##   GameManager.fuel_changed                    ──►  HUD
-##   Camera / RoadManager targets are plain Node2D refs set in the scene.
+##   GameManager.run_ended                       ──►  GameOverScreen.open
+##   GameOverScreen.restart_requested            ──►  GameManager.restart_run
 ##
-## Player never references RoadManager; RoadManager never references the HUD.
-## Swapping any single system means re-wiring only this file / scene.
+## Camera / RoadManager / TrafficManager targets are plain Node2D refs set in
+## the scene. Player never references TrafficManager; TrafficManager never
+## references the HUD. Swapping any single system means re-wiring only this
+## file / scene.
 
 @export var player: PlayerCar
 @export var hud: Hud
+@export var game_over: GameOverScreen
 
 func _ready() -> void:
-	if player == null or hud == null:
-		push_error("Main scene is missing its player/hud wiring.")
+	if player == null or hud == null or game_over == null:
+		push_error("Main scene is missing its player/hud/game_over wiring.")
 		return
 
 	# Gameplay -> UI, signals only.
@@ -22,7 +27,19 @@ func _ready() -> void:
 	player.distance_changed.connect(hud.display_distance)
 	GameManager.fuel_changed.connect(hud.display_fuel)
 
+	# Crash -> run end -> game over screen -> restart, still signals only.
+	player.crashed.connect(_on_player_crashed)
+	GameManager.run_ended.connect(game_over.open)
+	game_over.restart_requested.connect(GameManager.restart_run)
+
 	# Prime the HUD so it shows correct values before the first signal fires.
 	hud.display_speed(0.0)
 	hud.display_distance(0.0)
 	hud.display_fuel(GameManager.fuel)
+
+	GameManager.start_run()
+
+
+func _on_player_crashed() -> void:
+	# The player only announces the crash; consequences are decided here.
+	GameManager.end_run(player.distance_m)

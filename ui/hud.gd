@@ -10,14 +10,11 @@ extends CanvasLayer
 @export var fuel_label: Label
 
 func display_speed(speed_kmh: float) -> void:
-	speed_label.text = "%3.0f km/h" % speed_kmh
+	speed_label.text = UiFormat.speed_text(speed_kmh)
 
 
 func display_distance(distance_m: float) -> void:
-	if distance_m < 1000.0:
-		distance_label.text = "%.0f m" % distance_m
-	else:
-		distance_label.text = "%.2f km" % (distance_m / 1000.0)
+	distance_label.text = UiFormat.distance_text(distance_m)
 
 
 func display_fuel(percent: float) -> void:
