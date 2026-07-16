@@ -27,6 +27,7 @@ func _ready() -> void:
 	player.speed_changed.connect(hud.display_speed)
 	player.distance_changed.connect(hud.display_distance)
 	GameManager.fuel_changed.connect(hud.display_fuel)
+	GameManager.money_changed.connect(hud.display_money)
 
 	# Fuel loop: driving burns fuel, the fuel level feeds engine power back.
 	player.distance_changed.connect(GameManager.report_distance)
@@ -42,6 +43,7 @@ func _ready() -> void:
 	hud.display_speed(0.0)
 	hud.display_distance(0.0)
 	hud.display_fuel(GameManager.fuel)
+	hud.display_money(GameManager.money)
 
 	GameManager.start_run()
 

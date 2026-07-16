@@ -10,3 +10,7 @@ static func distance_text(distance_m: float) -> String:
 
 static func speed_text(speed_kmh: float) -> String:
 	return "%3.0f km/h" % speed_kmh
+
+
+static func money_text(amount: int) -> String:
+	return "$%d" % amount

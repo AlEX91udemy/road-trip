@@ -10,10 +10,16 @@ extends Node
 ## Emitted whenever the fuel level changes. The HUD displays it and the
 ## player car derives its engine power from it.
 signal fuel_changed(percent: float)
+## Emitted whenever the money amount changes. The HUD displays it.
+signal money_changed(amount: int)
 ## The current run just ended. Carries the final distance and why it ended.
 signal run_ended(distance_m: float, reason: RunEndReason)
 
 enum RunEndReason { CRASHED, OUT_OF_FUEL }
+
+## Money the player starts a run with. There is no income — the budget only
+## shrinks, which is what eventually ends every trip.
+const START_MONEY := 50
 
 const FUEL_FULL := 100.0
 ## Fuel burned per 100 m driven, in percent: a full tank lasts 2 000 m.
@@ -28,6 +34,12 @@ var fuel: float = FUEL_FULL:
 		fuel = clampf(value, 0.0, FUEL_FULL)
 		fuel_changed.emit(fuel)
 
+## Money on hand. The setter clamps and broadcasts every change.
+var money: int = START_MONEY:
+	set(value):
+		money = maxi(value, 0)
+		money_changed.emit(money)
+
 ## True while the player is driving; false between crash and restart.
 var run_active := false
 
@@ -37,6 +49,7 @@ var _consumed_upto_m := 0.0  # distance already billed for fuel
 func start_run() -> void:
 	run_active = true
 	fuel = FUEL_FULL
+	money = START_MONEY
 	_consumed_upto_m = 0.0
 	get_tree().paused = false
 

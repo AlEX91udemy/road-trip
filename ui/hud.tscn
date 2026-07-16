@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
 
-[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("speed_label", "distance_label", "fuel_label")]
+[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("speed_label", "distance_label", "fuel_label", "money_label")]
 layer = 10
 script = ExtResource("1_hud")
 speed_label = NodePath("Root/Stats/SpeedLabel")
 distance_label = NodePath("Root/Stats/DistanceLabel")
 fuel_label = NodePath("Root/Stats/FuelLabel")
+money_label = NodePath("Root/Stats/MoneyLabel")
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
@@ -49,6 +50,14 @@ theme_override_colors/font_outline_color = Color(0.08, 0.09, 0.13, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
 text = "Fuel 100%"
+
+[node name="MoneyLabel" type="Label" parent="Root/Stats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.09, 0.13, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 16
+text = "$50"
 
 [node name="Hint" type="Label" parent="Root"]
 layout_mode = 1
