@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/road/gas_station.gd" id="1_station"]
+[ext_resource type="Texture2D" path="res://assets/sprites/gas_station.png" id="2_art"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_trigger"]
+size = Vector2(140, 80)
+
+[node name="GasStation" type="Node2D" node_paths=PackedStringArray("hint_label", "trigger")]
+z_index = 1
+script = ExtResource("1_station")
+hint_label = NodePath("HintLabel")
+trigger = NodePath("Trigger")
+
+[node name="Building" type="Sprite2D" parent="."]
+position = Vector2(-96, -96)
+scale = Vector2(2, 2)
+texture = ExtResource("2_art")
+centered = false
+
+[node name="HintLabel" type="Label" parent="."]
+offset_left = -96.0
+offset_top = -120.0
+offset_right = 96.0
+offset_bottom = -104.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.09, 0.13, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+
+[node name="Trigger" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trigger"]
+position = Vector2(0, 57)
+shape = SubResource("RectangleShape2D_trigger")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" path="res://assets/sprites/sky.png" id="2_sky"]
@@ -15,12 +15,14 @@
 [ext_resource type="PackedScene" path="res://scenes/traffic_car.tscn" id="13_trafficcar"]
 [ext_resource type="Resource" path="res://resources/lanes.tres" id="14_lanes"]
 [ext_resource type="PackedScene" path="res://ui/game_over.tscn" id="15_gameover"]
+[ext_resource type="PackedScene" path="res://scenes/gas_station.tscn" id="16_gasstation"]
 
 [node name="Main" type="Node2D" node_paths=PackedStringArray("player", "hud", "game_over")]
 script = ExtResource("1_main")
 player = NodePath("PlayerCar")
 hud = NodePath("HUD")
 game_over = NodePath("GameOver")
+gas_station_scene = ExtResource("16_gasstation")
 
 [node name="BackgroundParallax" type="ParallaxBackground" parent="."]
 

@@ -291,6 +291,51 @@ def gen_car():
     save_png(OUT_DIR / "car_wheel.png", s, s, buf)
 
 
+# ---------------------------------------------------------------- gas station
+
+def gen_gas_station():
+    """Roadside gas station, 96x48: canopy over a pump island on the left,
+    a small shop building on the right, and a tall FUEL price sign. Drawn
+    with its base on the bottom row so the sprite sits on the road shoulder."""
+    w, h = 96, 48
+    buf = {}
+    ground = h - 1
+
+    # shop building (right side)
+    wall = (214, 208, 196)
+    wall_dark = (182, 174, 160)
+    rect(buf, 58, 20, 93, ground, wall)
+    for y in range(20, ground + 1, 3):                      # siding stripes
+        rect(buf, 58, y, 93, y, wall_dark)
+    rect(buf, 56, 16, 95, 19, (172, 60, 54))                # flat roof band
+    rect(buf, 62, 28, 74, 38, (139, 196, 222))              # window
+    rect(buf, 62, 28, 74, 30, (170, 216, 234))              # window glare
+    rect(buf, 80, 30, 88, ground, (74, 62, 58))             # door
+    rect(buf, 86, 38, 87, 39, (200, 190, 120))              # door handle
+
+    # canopy over the pump island (left side)
+    rect(buf, 2, 8, 52, 13, (198, 64, 58))                  # canopy roof
+    rect(buf, 2, 12, 52, 13, (150, 44, 44))                 # roof shadow edge
+    for px in (6, 46):                                      # support pillars
+        rect(buf, px, 14, px + 2, ground, (120, 120, 132))
+        rect(buf, px, 14, px, ground, (156, 156, 168))      # lit side
+    rect(buf, 14, 40, 40, ground, (96, 96, 108))            # pump island base
+
+    # fuel pump on the island
+    rect(buf, 22, 24, 32, 42, (204, 84, 60))                # pump body
+    rect(buf, 24, 27, 30, 32, (232, 230, 220))              # display
+    rect(buf, 33, 30, 34, 36, (60, 56, 60))                 # hose
+    rect(buf, 22, 24, 32, 25, (160, 56, 44))                # pump top shade
+
+    # tall sign on a pole between canopy and shop
+    rect(buf, 53, 6, 54, ground, (110, 110, 122))           # pole
+    rect(buf, 48, 0, 60, 5, (198, 64, 58))                  # sign board
+    rect(buf, 50, 2, 58, 3, (240, 236, 228))                # "text" stripe
+
+    outline(buf, w, h, (40, 24, 32, 255))
+    save_png(OUT_DIR / "gas_station.png", w, h, buf)
+
+
 if __name__ == "__main__":
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     gen_sky()
@@ -299,3 +344,4 @@ if __name__ == "__main__":
     gen_foreground()
     gen_road()
     gen_car()
+    gen_gas_station()

@@ -20,6 +20,17 @@ enum RunEndReason { CRASHED, OUT_OF_FUEL }
 ## Money the player starts a run with. There is no income — the budget only
 ## shrinks, which is what eventually ends every trip.
 const START_MONEY := 50
+## Fixed price of one visit to the pump: the tank is always filled up whole.
+const REFUEL_COST := 20
+## No refuel above this level — a moving car is never at exactly 100%, and
+## without the margin a double-press at the pump would charge twice.
+const REFUEL_REFUSE_ABOVE := 95.0
+
+## Where the first gas station stands, in meters from the start.
+const FIRST_STATION_M := 800.0
+## Distance between consecutive stations, in meters. Must stay comfortably
+## under a full tank's range (2 000 m) so every leg is drivable after refuel.
+const STATION_SPACING_M := 1000.0
 
 const FUEL_FULL := 100.0
 ## Fuel burned per 100 m driven, in percent: a full tank lasts 2 000 m.
@@ -43,6 +54,10 @@ var money: int = START_MONEY:
 ## True while the player is driving; false between crash and restart.
 var run_active := false
 
+## Distance of the current trip goal (the next gas station), in meters.
+## Main reads it to place the station in the world.
+var next_station_m := FIRST_STATION_M
+
 var _consumed_upto_m := 0.0  # distance already billed for fuel
 
 ## Called by Main on scene (re)load: resets run state for a fresh start.
@@ -50,6 +65,7 @@ func start_run() -> void:
 	run_active = true
 	fuel = FUEL_FULL
 	money = START_MONEY
+	next_station_m = FIRST_STATION_M
 	_consumed_upto_m = 0.0
 	get_tree().paused = false
 
@@ -65,6 +81,21 @@ func report_distance(distance_m: float) -> void:
 	_consumed_upto_m = distance_m
 	var remaining := fuel - meters * FUEL_PER_100M / 100.0
 	fuel = 0.0 if remaining < FUEL_DRY else remaining
+
+
+## Fills the tank for the fixed price. Silently refuses when the tank is
+## practically full or the money isn't there — the HUD tells the player why.
+func try_refuel() -> void:
+	if not run_active or fuel >= REFUEL_REFUSE_ABOVE or money < REFUEL_COST:
+		return
+	money -= REFUEL_COST
+	fuel = FUEL_FULL
+
+
+## Moves the trip goal to the next station down the road. Called by Main
+## once the player has driven past the current one.
+func advance_station() -> void:
+	next_station_m += STATION_SPACING_M
 
 
 ## Ends the run exactly once: freezes the world and announces the result.
