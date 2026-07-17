@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" path="res://assets/sprites/sky.png" id="2_sky"]
@@ -13,13 +13,19 @@
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="11_hud"]
 [ext_resource type="PackedScene" path="res://ui/game_over.tscn" id="15_gameover"]
 [ext_resource type="PackedScene" path="res://scenes/gas_station.tscn" id="16_gasstation"]
+[ext_resource type="Script" path="res://scripts/events/event_manager.gd" id="17_eventmgr"]
+[ext_resource type="Script" path="res://scripts/events/event_data.gd" id="18_eventdata"]
+[ext_resource type="Resource" path="res://resources/events/hitchhiker.tres" id="19_hitchhiker"]
+[ext_resource type="PackedScene" path="res://ui/event_popup.tscn" id="20_eventpopup"]
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("player", "hud", "game_over")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("player", "hud", "game_over", "event_manager", "event_popup")]
 script = ExtResource("1_main")
 player = NodePath("PlayerCar")
 hud = NodePath("HUD")
 game_over = NodePath("GameOver")
 gas_station_scene = ExtResource("16_gasstation")
+event_manager = NodePath("EventManager")
+event_popup = NodePath("EventPopup")
 
 [node name="BackgroundParallax" type="ParallaxBackground" parent="."]
 
@@ -87,3 +93,9 @@ look_ahead_time = 0.0
 [node name="HUD" parent="." instance=ExtResource("11_hud")]
 
 [node name="GameOver" parent="." instance=ExtResource("15_gameover")]
+
+[node name="EventManager" type="Node" parent="."]
+script = ExtResource("17_eventmgr")
+events = Array[ExtResource("18_eventdata")]([ExtResource("19_hitchhiker")])
+
+[node name="EventPopup" parent="." instance=ExtResource("20_eventpopup")]

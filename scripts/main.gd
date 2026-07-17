@@ -10,6 +10,9 @@ extends Node2D
 ##   GameOverScreen.restart_requested            ──►  GameManager.restart_run
 ##   GasStation.refuel_requested                 ──►  GameManager.try_refuel
 ##   GasStation.passed                           ──►  next goal + next station
+##   PlayerCar.distance_changed                  ──►  EventManager (event roll)
+##   EventManager.event_triggered                ──►  EventPopup.open
+##   EventPopup.resolved                         ──►  EventManager.complete_event
 ##
 ## Camera / RoadManager targets are plain Node2D refs set in the scene.
 ## The player never references the road; managers never reference the HUD.
@@ -22,12 +25,15 @@ extends Node2D
 @export var gas_station_scene: PackedScene
 ## World Y where a station's base sits (the road's far shoulder).
 @export var station_ground_y := 262.0
+@export var event_manager: EventManager
+@export var event_popup: EventPopup
 
 var _station: GasStation
 
 func _ready() -> void:
-	if player == null or hud == null or game_over == null or gas_station_scene == null:
-		push_error("Main scene is missing its player/hud/game_over/gas_station wiring.")
+	if player == null or hud == null or game_over == null or gas_station_scene == null \
+			or event_manager == null or event_popup == null:
+		push_error("Main scene is missing its player/hud/game_over/gas_station/event wiring.")
 		return
 
 	# Gameplay -> UI, signals only.
@@ -42,8 +48,14 @@ func _ready() -> void:
 
 	# Run end (dry tank) -> game over screen -> restart, signals only.
 	player.stalled.connect(_on_player_stalled)
-	GameManager.run_ended.connect(game_over.open)
+	GameManager.run_ended.connect(_on_run_ended)
 	game_over.restart_requested.connect(GameManager.restart_run)
+
+	# Roadside events: distance rolls the next event, the popup shows it,
+	# and resolving it re-arms the manager for the next check.
+	player.distance_changed.connect(event_manager.report_distance)
+	event_manager.event_triggered.connect(event_popup.open)
+	event_popup.resolved.connect(_on_event_resolved)
 
 	# Prime the HUD so it shows correct values before the first signal fires.
 	hud.display_speed(0.0)
@@ -79,3 +91,14 @@ func _on_station_passed() -> void:
 func _on_player_stalled() -> void:
 	# The player only announces what happened; consequences are decided here.
 	GameManager.end_run(player.distance_m, GameManager.RunEndReason.OUT_OF_FUEL)
+
+
+func _on_run_ended(distance_m: float, reason: GameManager.RunEndReason) -> void:
+	# An event could in principle still be open the instant the tank runs
+	# dry; close it so it can't stay stacked on top of the Game Over screen.
+	event_popup.close()
+	game_over.open(distance_m, reason)
+
+
+func _on_event_resolved() -> void:
+	event_manager.complete_event()
