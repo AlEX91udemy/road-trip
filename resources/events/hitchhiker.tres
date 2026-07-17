@@ -1,17 +1,22 @@
-[gd_resource type="Resource" script_class="EventData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="EventData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/events/event_data.gd" id="1_data"]
 [ext_resource type="Script" path="res://scripts/events/event_choice_data.gd" id="2_choice"]
+[ext_resource type="Script" path="res://scripts/events/event_result.gd" id="3_result"]
+
+[sub_resource type="Resource" id="Resource_pickup_result"]
+script = ExtResource("3_result")
+show_message = "Спасибо."
+money_delta = 5
 
 [sub_resource type="Resource" id="Resource_pickup"]
 script = ExtResource("2_choice")
 label = "Подобрать"
-message = "Спасибо."
+result = SubResource("Resource_pickup_result")
 
 [sub_resource type="Resource" id="Resource_pass"]
 script = ExtResource("2_choice")
 label = "Проехать мимо"
-message = ""
 
 [resource]
 script = ExtResource("1_data")

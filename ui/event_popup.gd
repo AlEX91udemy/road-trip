@@ -1,17 +1,22 @@
 class_name EventPopup
 extends CanvasLayer
 ## Pure presentation for roadside events, like Hud and GameOverScreen: it
-## only knows how to show an EventData and report when the player is done
-## with it. It builds one button per EventData.choices entry at runtime, so
-## events with any number of choices work without touching this script.
+## only knows how to show an EventData and report which result (if any)
+## the player's choice produced. It builds one button per EventData.choices
+## entry at runtime, so events with any number of choices work without
+## touching this script. It never applies a result itself — that's Main's
+## job, via the resolved signal.
 ##
-## A choice with a non-empty message is shown as one extra beat (replace
-## the description, wait for a single continue click) before closing —
-## e.g. picking up the hitchhiker shows "Спасибо." A choice with no message
-## closes immediately.
+## A choice whose result has a non-empty show_message is shown as one extra
+## beat (replace the description, wait for a single continue click) before
+## closing — e.g. picking up the hitchhiker shows "Спасибо." A choice with
+## no result, or a result with no message, closes immediately.
 
-## The player is done with the current event (whatever they picked).
-signal resolved
+## The player is done with the current event. Carries the chosen choice's
+## result — null if the choice had none (e.g. "drive on"), or if the popup
+## was closed without a choice being made (Main does this defensively on
+## run end).
+signal resolved(result: EventResult)
 
 @export var title_label: Label
 @export var description_label: Label
@@ -50,15 +55,16 @@ func _add_button(label: String, on_pressed: Callable) -> void:
 
 
 func _on_choice_pressed(choice: EventChoiceData) -> void:
-	if choice.message.is_empty():
-		close()
+	var result := choice.result
+	if result == null or result.show_message.is_empty():
+		close(result)
 		return
-	description_label.text = choice.message
+	description_label.text = result.show_message
 	_set_choice_buttons([])
-	_add_button("...", close)
+	_add_button("...", close.bind(result))
 
 
-func close() -> void:
+func close(result: EventResult = null) -> void:
 	visible = false
 	_set_choice_buttons([])
-	resolved.emit()
+	resolved.emit(result)

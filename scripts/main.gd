@@ -12,7 +12,8 @@ extends Node2D
 ##   GasStation.passed                           ──►  next goal + next station
 ##   PlayerCar.distance_changed                  ──►  Main (event check cadence)
 ##   EventManager.event_triggered                ──►  EventPopup.open
-##   EventPopup.resolved                         ──►  EventManager.complete_event
+##   EventPopup.resolved                         ──►  apply EventResult, then
+##                                                      EventManager.complete_event
 ##
 ## Camera / RoadManager targets are plain Node2D refs set in the scene.
 ## The player never references the road; managers never reference the HUD.
@@ -108,7 +109,13 @@ func _on_run_ended(distance_m: float, reason: GameManager.RunEndReason) -> void:
 	game_over.open(distance_m, reason)
 
 
-func _on_event_resolved() -> void:
+func _on_event_resolved(result: EventResult) -> void:
+	# EventManager never sees this — it only reports which event fired.
+	# Applying what a choice actually does is Main's job, same as every
+	# other gameplay consequence in this file.
+	if result != null:
+		GameManager.money += result.money_delta
+		GameManager.fuel += result.fuel_delta
 	event_manager.complete_event()
 
 
