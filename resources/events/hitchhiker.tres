@@ -18,5 +18,5 @@ script = ExtResource("1_data")
 title = "Автостопщик"
 description = "На обочине стоит человек с рюкзаком."
 chance = 0.2
-cooldown = 500.0
+cooldown = 10.0
 choices = Array[ExtResource("2_choice")]([SubResource("Resource_pickup"), SubResource("Resource_pass")])

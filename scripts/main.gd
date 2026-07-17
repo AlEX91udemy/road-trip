@@ -10,7 +10,7 @@ extends Node2D
 ##   GameOverScreen.restart_requested            ──►  GameManager.restart_run
 ##   GasStation.refuel_requested                 ──►  GameManager.try_refuel
 ##   GasStation.passed                           ──►  next goal + next station
-##   PlayerCar.distance_changed                  ──►  EventManager (event roll)
+##   PlayerCar.distance_changed                  ──►  Main (event check cadence)
 ##   EventManager.event_triggered                ──►  EventPopup.open
 ##   EventPopup.resolved                         ──►  EventManager.complete_event
 ##
@@ -27,8 +27,15 @@ extends Node2D
 @export var station_ground_y := 262.0
 @export var event_manager: EventManager
 @export var event_popup: EventPopup
+## How often (in meters travelled) Main asks EventManager to try firing an
+## event. EventManager itself has no notion of distance or cadence at all —
+## this constant and the accumulator below are the entire "when" side of
+## the event system. Moving to a different trigger source (a Timer, a
+## region trigger, a gas-station visit) only ever touches this file.
+@export var event_check_interval_m := 50.0
 
 var _station: GasStation
+var _next_event_check_m := 0.0
 
 func _ready() -> void:
 	if player == null or hud == null or game_over == null or gas_station_scene == null \
@@ -51,9 +58,10 @@ func _ready() -> void:
 	GameManager.run_ended.connect(_on_run_ended)
 	game_over.restart_requested.connect(GameManager.restart_run)
 
-	# Roadside events: distance rolls the next event, the popup shows it,
-	# and resolving it re-arms the manager for the next check.
-	player.distance_changed.connect(event_manager.report_distance)
+	# Roadside events: Main decides WHEN to ask (every event_check_interval_m
+	# of travel); EventManager decides WHICH event fires, if any.
+	_next_event_check_m = event_check_interval_m
+	player.distance_changed.connect(_on_distance_for_events)
 	event_manager.event_triggered.connect(event_popup.open)
 	event_popup.resolved.connect(_on_event_resolved)
 
@@ -102,3 +110,10 @@ func _on_run_ended(distance_m: float, reason: GameManager.RunEndReason) -> void:
 
 func _on_event_resolved() -> void:
 	event_manager.complete_event()
+
+
+func _on_distance_for_events(distance_m: float) -> void:
+	if distance_m < _next_event_check_m:
+		return
+	_next_event_check_m = distance_m + event_check_interval_m
+	event_manager.attempt_trigger()
