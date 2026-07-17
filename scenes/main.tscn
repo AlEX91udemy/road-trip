@@ -1,10 +1,15 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" path="res://assets/sprites/sky.png" id="2_sky"]
 [ext_resource type="Texture2D" path="res://assets/sprites/mountains.png" id="3_mountains"]
 [ext_resource type="Texture2D" path="res://assets/sprites/forest.png" id="4_forest"]
 [ext_resource type="Texture2D" path="res://assets/sprites/foreground.png" id="5_foreground"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fields.png" id="21_fields"]
+[ext_resource type="Texture2D" path="res://assets/sprites/roadside_vegetation.png" id="22_vegetation"]
+[ext_resource type="Texture2D" path="res://assets/sprites/utility_poles.png" id="23_poles"]
+[ext_resource type="Texture2D" path="res://assets/sprites/landmarks.png" id="24_landmarks"]
+[ext_resource type="Texture2D" path="res://assets/sprites/birches.png" id="25_birches"]
 [ext_resource type="Script" path="res://scripts/road/road_manager.gd" id="6_roadmgr"]
 [ext_resource type="Script" path="res://scripts/components/node_pool.gd" id="7_pool"]
 [ext_resource type="PackedScene" path="res://scenes/road_chunk.tscn" id="8_chunk"]
@@ -39,13 +44,33 @@ texture = ExtResource("2_sky")
 centered = false
 
 [node name="MountainLayer" type="ParallaxLayer" parent="BackgroundParallax"]
-motion_scale = Vector2(0.15, 1)
+motion_scale = Vector2(0.1, 1)
 motion_mirroring = Vector2(640, 0)
 
 [node name="Mountains" type="Sprite2D" parent="BackgroundParallax/MountainLayer"]
 position = Vector2(0, 40)
 scale = Vector2(2, 2)
 texture = ExtResource("3_mountains")
+centered = false
+
+[node name="LandmarksLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0.16, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="Landmarks" type="Sprite2D" parent="BackgroundParallax/LandmarksLayer"]
+position = Vector2(0, 60)
+scale = Vector2(2, 2)
+texture = ExtResource("24_landmarks")
+centered = false
+
+[node name="FieldsLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0.22, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="Fields" type="Sprite2D" parent="BackgroundParallax/FieldsLayer"]
+position = Vector2(0, 110)
+scale = Vector2(2, 2)
+texture = ExtResource("21_fields")
 centered = false
 
 [node name="ForestLayer" type="ParallaxLayer" parent="BackgroundParallax"]
@@ -56,6 +81,36 @@ motion_mirroring = Vector2(640, 0)
 position = Vector2(0, 150)
 scale = Vector2(2, 2)
 texture = ExtResource("4_forest")
+centered = false
+
+[node name="BirchesLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0.55, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="Birches" type="Sprite2D" parent="BackgroundParallax/BirchesLayer"]
+position = Vector2(0, 145)
+scale = Vector2(2, 2)
+texture = ExtResource("25_birches")
+centered = false
+
+[node name="RoadsideVegetationLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0.8, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="RoadsideVegetation" type="Sprite2D" parent="BackgroundParallax/RoadsideVegetationLayer"]
+position = Vector2(0, 240)
+scale = Vector2(2, 2)
+texture = ExtResource("22_vegetation")
+centered = false
+
+[node name="UtilityPolesLayer" type="ParallaxLayer" parent="BackgroundParallax"]
+motion_scale = Vector2(0.92, 1)
+motion_mirroring = Vector2(640, 0)
+
+[node name="UtilityPoles" type="Sprite2D" parent="BackgroundParallax/UtilityPolesLayer"]
+position = Vector2(0, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("23_poles")
 centered = false
 
 [node name="ForegroundParallax" type="ParallaxBackground" parent="."]

@@ -1,14 +1,31 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://ui/fuel_gauge.gd" id="2_fuelgauge"]
 
-[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("speed_label", "distance_label", "fuel_label", "money_label")]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.07, 0.08, 0.11, 0.74)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.08)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+
+[node name="HUD" type="CanvasLayer" node_paths=PackedStringArray("speed_label", "distance_label", "fuel_gauge", "money_label")]
 layer = 10
 script = ExtResource("1_hud")
-speed_label = NodePath("Root/Stats/SpeedLabel")
-distance_label = NodePath("Root/Stats/DistanceLabel")
-fuel_label = NodePath("Root/Stats/FuelLabel")
-money_label = NodePath("Root/Stats/MoneyLabel")
+speed_label = NodePath("Root/MainPanel/VBox/SpeedLabel")
+distance_label = NodePath("Root/MainPanel/VBox/InfoRow/DistanceLabel")
+fuel_gauge = NodePath("Root/MainPanel/VBox/FuelRow/FuelGauge")
+money_label = NodePath("Root/MainPanel/VBox/InfoRow/MoneyLabel")
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
@@ -19,44 +36,60 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Stats" type="VBoxContainer" parent="Root"]
+[node name="MainPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 12.0
+offset_left = 10.0
 offset_top = 8.0
-offset_right = 220.0
-offset_bottom = 100.0
-theme_override_constants/separation = 2
+offset_right = 196.0
+offset_bottom = 98.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="SpeedLabel" type="Label" parent="Root/Stats"]
+[node name="VBox" type="VBoxContainer" parent="Root/MainPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 5
+
+[node name="SpeedLabel" type="Label" parent="Root/MainPanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.08, 0.09, 0.13, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "0 km/h"
 
-[node name="DistanceLabel" type="Label" parent="Root/Stats"]
+[node name="FuelRow" type="HBoxContainer" parent="Root/MainPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.08, 0.09, 0.13, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 16
+theme_override_constants/separation = 6
+
+[node name="FuelCaption" type="Label" parent="Root/MainPanel/VBox/FuelRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(1, 0.85, 0.55, 1)
+theme_override_font_sizes/font_size = 11
+text = "FUEL"
+vertical_alignment = 1
+
+[node name="FuelGauge" type="HBoxContainer" parent="Root/MainPanel/VBox/FuelRow"]
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("2_fuelgauge")
+
+[node name="InfoRow" type="HBoxContainer" parent="Root/MainPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="DistanceLabel" type="Label" parent="Root/MainPanel/VBox/InfoRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 13
 text = "0 m"
 
-[node name="FuelLabel" type="Label" parent="Root/Stats"]
+[node name="MoneyLabel" type="Label" parent="Root/MainPanel/VBox/InfoRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.5, 1)
-theme_override_colors/font_outline_color = Color(0.08, 0.09, 0.13, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 16
-text = "Fuel 100%"
-
-[node name="MoneyLabel" type="Label" parent="Root/Stats"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
-theme_override_colors/font_outline_color = Color(0.08, 0.09, 0.13, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.58, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 13
 text = "$50"
 
 [node name="Hint" type="Label" parent="Root"]

@@ -7,7 +7,7 @@ extends CanvasLayer
 
 @export var speed_label: Label
 @export var distance_label: Label
-@export var fuel_label: Label
+@export var fuel_gauge: FuelGauge
 @export var money_label: Label
 
 func display_speed(speed_kmh: float) -> void:
@@ -23,4 +23,4 @@ func display_money(amount: int) -> void:
 
 
 func display_fuel(percent: float) -> void:
-	fuel_label.text = "Fuel %.0f%%" % percent
+	fuel_gauge.set_percent(percent)
