@@ -220,9 +220,7 @@ def gen_road():
 # ---------------------------------------------------------------- car body + wheel
 
 def draw_car_body(body, body_dark, body_light):
-    """Draws the shared 56x24 side-view car hull in the given paint colors.
-    Used for the player body and every traffic color variant, so all cars
-    stay pixel-identical in silhouette."""
+    """Draws the 56x24 side-view car hull in the given paint colors."""
     w, h = 56, 24
     buf = {}
     window = (150, 205, 230)
@@ -256,21 +254,9 @@ def draw_car_body(body, body_dark, body_light):
     return w, h, buf
 
 
-# Traffic paint jobs: (name, body, body_dark, body_light). Distinct hues so
-# oncoming cars read instantly as "not the player" (player stays red).
-TRAFFIC_PAINTS = [
-    ("blue", (64, 108, 190), (44, 78, 148), (108, 148, 224)),
-    ("green", (74, 148, 92), (52, 110, 66), (112, 182, 124)),
-    ("sand", (206, 176, 96), (166, 136, 64), (228, 204, 136)),
-]
-
-
 def gen_car():
     w, h, buf = draw_car_body((198, 58, 66), (152, 40, 54), (226, 96, 96))
     save_png(OUT_DIR / "car_body.png", w, h, buf)
-    for name, body, dark, light in TRAFFIC_PAINTS:
-        w, h, buf = draw_car_body(body, dark, light)
-        save_png(OUT_DIR / f"traffic_body_{name}.png", w, h, buf)
 
     # wheel: 12x12, small tread marks make the spin animation visible
     s = 12

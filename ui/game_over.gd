@@ -22,8 +22,11 @@ func _ready() -> void:
 ## Called by Main (via GameManager.run_ended) with the final run distance
 ## and the reason the run ended, which picks the headline.
 func open(distance_m: float, reason: GameManager.RunEndReason) -> void:
-	title_label.text = "OUT OF FUEL" if reason == GameManager.RunEndReason.OUT_OF_FUEL \
-			else "GAME OVER"
+	match reason:
+		GameManager.RunEndReason.OUT_OF_FUEL:
+			title_label.text = "OUT OF FUEL"
+		_:
+			title_label.text = "GAME OVER"
 	distance_label.text = "You drove %s" % UiFormat.distance_text(distance_m)
 	visible = true
 

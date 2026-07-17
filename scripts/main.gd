@@ -4,17 +4,16 @@ extends Node2D
 ##
 ##   PlayerCar.speed_changed / distance_changed  ──►  HUD
 ##   PlayerCar.distance_changed                  ──►  GameManager (fuel burn)
-##   PlayerCar.crashed / stalled                 ──►  GameManager.end_run
+##   PlayerCar.stalled                           ──►  GameManager.end_run
 ##   GameManager.fuel_changed                    ──►  HUD + PlayerCar power
 ##   GameManager.run_ended                       ──►  GameOverScreen.open
 ##   GameOverScreen.restart_requested            ──►  GameManager.restart_run
 ##   GasStation.refuel_requested                 ──►  GameManager.try_refuel
 ##   GasStation.passed                           ──►  next goal + next station
 ##
-## Camera / RoadManager / TrafficManager targets are plain Node2D refs set in
-## the scene. Player never references TrafficManager; TrafficManager never
-## references the HUD. Swapping any single system means re-wiring only this
-## file / scene.
+## Camera / RoadManager targets are plain Node2D refs set in the scene.
+## The player never references the road; managers never reference the HUD.
+## Swapping any single system means re-wiring only this file / scene.
 
 @export var player: PlayerCar
 @export var hud: Hud
@@ -41,8 +40,7 @@ func _ready() -> void:
 	player.distance_changed.connect(GameManager.report_distance)
 	GameManager.fuel_changed.connect(player.set_fuel)
 
-	# Run end (crash or dry tank) -> game over screen -> restart, signals only.
-	player.crashed.connect(_on_player_crashed)
+	# Run end (dry tank) -> game over screen -> restart, signals only.
 	player.stalled.connect(_on_player_stalled)
 	GameManager.run_ended.connect(game_over.open)
 	game_over.restart_requested.connect(GameManager.restart_run)
@@ -78,10 +76,6 @@ func _on_station_passed() -> void:
 	_spawn_station()
 
 
-func _on_player_crashed() -> void:
-	# The player only announces what happened; consequences are decided here.
-	GameManager.end_run(player.distance_m, GameManager.RunEndReason.CRASHED)
-
-
 func _on_player_stalled() -> void:
+	# The player only announces what happened; consequences are decided here.
 	GameManager.end_run(player.distance_m, GameManager.RunEndReason.OUT_OF_FUEL)

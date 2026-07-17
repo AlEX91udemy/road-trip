@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" path="res://assets/sprites/sky.png" id="2_sky"]
@@ -11,9 +11,6 @@
 [ext_resource type="PackedScene" path="res://scenes/player_car.tscn" id="9_player"]
 [ext_resource type="Script" path="res://scripts/camera/follow_camera.gd" id="10_camera"]
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="11_hud"]
-[ext_resource type="Script" path="res://scripts/traffic/traffic_manager.gd" id="12_trafficmgr"]
-[ext_resource type="PackedScene" path="res://scenes/traffic_car.tscn" id="13_trafficcar"]
-[ext_resource type="Resource" path="res://resources/lanes.tres" id="14_lanes"]
 [ext_resource type="PackedScene" path="res://ui/game_over.tscn" id="15_gameover"]
 [ext_resource type="PackedScene" path="res://scenes/gas_station.tscn" id="16_gasstation"]
 
@@ -28,6 +25,7 @@ gas_station_scene = ExtResource("16_gasstation")
 
 [node name="SkyLayer" type="ParallaxLayer" parent="BackgroundParallax"]
 motion_scale = Vector2(0, 0)
+motion_mirroring = Vector2(640, 0)
 
 [node name="Sky" type="Sprite2D" parent="BackgroundParallax/SkyLayer"]
 scale = Vector2(2, 2)
@@ -77,16 +75,6 @@ view_anchor = NodePath("../FollowCamera")
 script = ExtResource("7_pool")
 scene = ExtResource("8_chunk")
 
-[node name="TrafficManager" type="Node2D" parent="." node_paths=PackedStringArray("pool", "view_anchor")]
-script = ExtResource("12_trafficmgr")
-pool = NodePath("CarPool")
-view_anchor = NodePath("../FollowCamera")
-lanes = ExtResource("14_lanes")
-
-[node name="CarPool" type="Node" parent="TrafficManager"]
-script = ExtResource("7_pool")
-scene = ExtResource("13_trafficcar")
-
 [node name="PlayerCar" parent="." instance=ExtResource("9_player")]
 position = Vector2(0, 317)
 
@@ -94,6 +82,7 @@ position = Vector2(0, 317)
 position = Vector2(0, 180)
 script = ExtResource("10_camera")
 target = NodePath("../PlayerCar")
+look_ahead_time = 0.0
 
 [node name="HUD" parent="." instance=ExtResource("11_hud")]
 

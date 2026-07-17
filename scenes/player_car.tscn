@@ -1,21 +1,17 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_car.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/components/movement_component.gd" id="2_movement"]
 [ext_resource type="Script" path="res://scripts/components/sway_component.gd" id="3_sway"]
 [ext_resource type="Texture2D" path="res://assets/sprites/car_body.png" id="4_body"]
 [ext_resource type="Texture2D" path="res://assets/sprites/car_wheel.png" id="5_wheel"]
-[ext_resource type="Script" path="res://scripts/components/lane_switch_component.gd" id="6_laneswitch"]
-[ext_resource type="Resource" path="res://resources/lanes.tres" id="7_lanes"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_presence"]
 size = Vector2(48, 20)
 
-[node name="PlayerCar" type="Node2D" node_paths=PackedStringArray("movement", "lane_switch", "hitbox", "front_wheel", "back_wheel")]
+[node name="PlayerCar" type="Node2D" node_paths=PackedStringArray("movement", "front_wheel", "back_wheel")]
 script = ExtResource("1_player")
 movement = NodePath("MovementComponent")
-lane_switch = NodePath("LaneSwitchComponent")
-hitbox = NodePath("Hitbox")
 front_wheel = NodePath("WheelFront")
 back_wheel = NodePath("WheelBack")
 
@@ -31,21 +27,17 @@ texture = ExtResource("5_wheel")
 position = Vector2(0, -16)
 texture = ExtResource("4_body")
 
-[node name="Hitbox" type="Area2D" parent="."]
+[node name="PresenceArea" type="Area2D" parent="."]
 collision_layer = 1
-collision_mask = 2
+collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PresenceArea"]
 position = Vector2(0, -13)
-shape = SubResource("RectangleShape2D_hitbox")
+shape = SubResource("RectangleShape2D_presence")
 
 [node name="MovementComponent" type="Node" parent="."]
 script = ExtResource("2_movement")
 acceleration = 80.0
-
-[node name="LaneSwitchComponent" type="Node" parent="."]
-script = ExtResource("6_laneswitch")
-lanes = ExtResource("7_lanes")
 
 [node name="SwayComponent" type="Node" parent="." node_paths=PackedStringArray("target")]
 script = ExtResource("3_sway")

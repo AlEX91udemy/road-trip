@@ -1,37 +1,30 @@
 class_name PlayerCar
 extends Node2D
 ## The player's car. Composed from small, replaceable components:
-##  - MovementComponent   — speed simulation (also used by traffic cars)
-##  - LaneSwitchComponent — discrete lane position + smooth glide between lanes
-##  - SwayComponent       — cosmetic body bob/tilt (wired to movement via
-##                          signal inside player_car.tscn)
+##  - MovementComponent — speed simulation (throttle -> smooth px/s)
+##  - SwayComponent     — cosmetic body bob/tilt (wired to movement via
+##                        signal inside player_car.tscn)
 ##
-## Day 1 driving model: the throttle is always fully open, so speed builds up
-## gradually on its own (MovementComponent's torque falloff shapes the ramp);
-## the player's only control is switching lanes to dodge oncoming traffic.
+## Keep-Driving-style driving model: the car cruises on its own along a calm
+## highway — the framing keeps it visually still while the world slides past.
+## There is nothing to dodge; fuel is the pressure. Low fuel starves the
+## engine (power fades), an empty tank rolls the car to a stop.
 ##
-## This script only: reads input, applies the resulting motion, spins the
-## wheels, reports collisions and broadcasts telemetry. It knows NOTHING about
-## the road, the traffic manager, the camera or the HUD — the Main scene wires
-## those up through signals, so any of them can be swapped without touching
-## this file.
+## This script only: applies motion, spins the wheels and broadcasts
+## telemetry. It knows NOTHING about the road, the camera or the HUD — the
+## Main scene wires those up through signals, so any of them can be swapped
+## without touching this file.
 
 ## Current speed for display, in km/h. Connected to the HUD by Main.
 signal speed_changed(speed_kmh: float)
 ## Total distance travelled, in meters. Connected to the HUD by Main.
 signal distance_changed(distance_m: float)
-## The car hit something lethal (oncoming traffic). Emitted exactly once.
-signal crashed
 ## The engine died (no fuel) and the car has rolled to a complete stop.
 ## Emitted exactly once.
 signal stalled
 
 ## The drivetrain component driving this car.
 @export var movement: MovementComponent
-## Lane logic component; owns which lane we are in and the glide between them.
-@export var lane_switch: LaneSwitchComponent
-## Area overlapping oncoming traffic; its area_entered means a crash.
-@export var hitbox: Area2D
 ## Wheel sprites, rotated visually according to speed.
 @export var front_wheel: Sprite2D
 @export var back_wheel: Sprite2D
@@ -44,9 +37,6 @@ signal stalled
 ## fades linearly from here down to a dead stop at 0%.
 @export var low_fuel_threshold := 15.0
 
-const ACTION_LANE_UP := "lane_up"
-const ACTION_LANE_DOWN := "lane_down"
-
 ## Total distance travelled so far, in meters. Read-only telemetry.
 var distance_m: float:
 	get:
@@ -55,34 +45,19 @@ var distance_m: float:
 var _distance_m := 0.0
 var _last_speed_kmh := -1.0
 var _last_distance_m := -1.0
-var _crashed := false
 var _stalled := false
 
-func _ready() -> void:
-	if hitbox != null:
-		hitbox.area_entered.connect(_on_hitbox_area_entered)
-
-
 func _physics_process(delta: float) -> void:
-	if movement == null or _crashed:
+	if movement == null:
 		return
 
-	if Input.is_action_just_pressed(ACTION_LANE_UP):
-		lane_switch.move_up()
-	if Input.is_action_just_pressed(ACTION_LANE_DOWN):
-		lane_switch.move_down()
-
-	# Throttle is always fully open on Day 1 — speed ramps up by itself.
+	# Cruise: the throttle stays open, MovementComponent shapes the ramp.
 	movement.set_throttle(1.0)
 	var speed_px := movement.step(delta)
 
 	# Move the car through the world; everything else (camera, road, parallax)
 	# reacts to that on its own.
 	position.x += speed_px * delta
-	position.y = lane_switch.step(delta)
-	# Lower lanes are closer to the viewer, so draw over cars in upper lanes.
-	z_index = int(position.y)
-
 	_distance_m += speed_px * delta / pixels_per_meter
 	_spin_wheels(speed_px, delta)
 	_emit_telemetry(speed_px)
@@ -116,10 +91,3 @@ func _emit_telemetry(speed_px: float) -> void:
 	if _distance_m - _last_distance_m >= 1.0:
 		_last_distance_m = _distance_m
 		distance_changed.emit(_distance_m)
-
-
-func _on_hitbox_area_entered(_area: Area2D) -> void:
-	if _crashed:
-		return
-	_crashed = true
-	crashed.emit()

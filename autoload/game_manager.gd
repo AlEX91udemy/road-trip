@@ -1,11 +1,10 @@
 extends Node
 ## GameManager (autoload) — the only allowed singleton.
 ##
-## Owns run lifecycle and run resources (fuel): a run is active until the
-## player crashes or runs the tank dry, the whole tree pauses on game over,
-## and restart_run reloads the scene for a fresh start. Everything is exposed
-## through signals so no gameplay system ever needs a hard reference to
-## another one.
+## Owns run lifecycle and run resources (fuel, money): a run is active until
+## the tank runs dry, the whole tree pauses on game over, and restart_run
+## reloads the scene for a fresh start. Everything is exposed through signals
+## so no gameplay system ever needs a hard reference to another one.
 
 ## Emitted whenever the fuel level changes. The HUD displays it and the
 ## player car derives its engine power from it.
@@ -15,7 +14,7 @@ signal money_changed(amount: int)
 ## The current run just ended. Carries the final distance and why it ended.
 signal run_ended(distance_m: float, reason: RunEndReason)
 
-enum RunEndReason { CRASHED, OUT_OF_FUEL }
+enum RunEndReason { OUT_OF_FUEL }
 
 ## Money the player starts a run with. There is no income — the budget only
 ## shrinks, which is what eventually ends every trip.
