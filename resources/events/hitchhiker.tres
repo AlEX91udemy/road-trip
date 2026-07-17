@@ -15,7 +15,6 @@ message = ""
 
 [resource]
 script = ExtResource("1_data")
-id = &"hitchhiker"
 title = "Автостопщик"
 description = "На обочине стоит человек с рюкзаком."
 chance = 0.2

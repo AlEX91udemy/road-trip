@@ -39,10 +39,14 @@ func _set_choice_buttons(choices: Array[EventChoiceData]) -> void:
 		choices_container.remove_child(child)
 		child.queue_free()
 	for choice in choices:
-		var button := Button.new()
-		button.text = choice.label
-		button.pressed.connect(_on_choice_pressed.bind(choice))
-		choices_container.add_child(button)
+		_add_button(choice.label, _on_choice_pressed.bind(choice))
+
+
+func _add_button(label: String, on_pressed: Callable) -> void:
+	var button := Button.new()
+	button.text = label
+	button.pressed.connect(on_pressed)
+	choices_container.add_child(button)
 
 
 func _on_choice_pressed(choice: EventChoiceData) -> void:
@@ -50,13 +54,11 @@ func _on_choice_pressed(choice: EventChoiceData) -> void:
 		close()
 		return
 	description_label.text = choice.message
-	var continue_button := Button.new()
-	continue_button.text = "..."
-	continue_button.pressed.connect(close)
 	_set_choice_buttons([])
-	choices_container.add_child(continue_button)
+	_add_button("...", close)
 
 
 func close() -> void:
 	visible = false
+	_set_choice_buttons([])
 	resolved.emit()

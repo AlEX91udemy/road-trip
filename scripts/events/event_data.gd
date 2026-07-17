@@ -5,8 +5,6 @@ extends Resource
 ## creating a new EventData resource (its own .tres file) and registering
 ## it with EventManager — the manager and the popup never change.
 
-## Unique identifier, useful for save/analytics/debug later.
-@export var id: StringName = &""
 ## Short heading shown at the top of the event popup.
 @export var title: String = ""
 ## Body text describing the situation.
